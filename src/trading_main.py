@@ -143,15 +143,17 @@ def generate_trade_signal(ticker1, ticker2, halflife, hedge_ratio, end_date):
 
         trading_spread = normalize_list(ticker1_trading_pricing)
 
-    # print(trading_spread[-3:])
-
     if trading_spread[-2] < TRADE_DEVIATION_THRESHOLD and trading_spread[-1] > TRADE_DEVIATION_THRESHOLD:
 
-        print("SHORT!", end_date)
+        print("SHORT!", end_date, halflife)
+
+        return {"DIRECTION": "SHORT", "HALFLIFE": halflife, "SHORT_TICKER": ticker1}
 
     if trading_spread[-2] > -TRADE_DEVIATION_THRESHOLD and trading_spread[-1] < -TRADE_DEVIATION_THRESHOLD:
 
-        print("BUY! on ", end_date)
+        print("BUY! on ", end_date, halflife)
+
+        return {"DIRECTION": "LONG", "HALFLIFE": halflife, "LONG_TICKER": ticker1}
 
     return
         
@@ -171,13 +173,15 @@ def run_strategy(today=None):
     #     break
 
     # today = "2024-10-05"
-    for ticker in ["HSIC"]: # tickers:
+    for ticker in ["IBM"]: # tickers:
 
         is_stationary, halflife, hedge_ratio = test_stationarity(ticker, end_date=today)
 
         if is_stationary:
 
-            generate_trade_signal(ticker, None, halflife, hedge_ratio, today)
+            trade_signal = generate_trade_signal(ticker, None, halflife, hedge_ratio, today)
+
+            print(trade_signal)
 
     return
 
